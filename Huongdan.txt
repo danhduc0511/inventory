@@ -1,0 +1,3 @@
+Day1:+Create project and add dependencies
+      +connect to database Mysql
+      +create entity class
