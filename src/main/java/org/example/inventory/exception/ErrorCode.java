@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum ErrorCode {
     USER_NOT_EXIST(400, "User does not exist", HttpStatus.NOT_FOUND),
+    INVALID_CREDENTIALS(400, "Invalid username or password", HttpStatus.BAD_REQUEST),
     UNAUTHORIZED(401, "Unauthorized access", HttpStatus.UNAUTHORIZED),
     CATEGORY_NOT_FOUND(404, "Category not found", HttpStatus.NOT_FOUND),
     SUPPLIER_NOT_FOUND(404, "Supplier not found", HttpStatus.NOT_FOUND),

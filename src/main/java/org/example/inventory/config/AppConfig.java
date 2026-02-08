@@ -25,9 +25,9 @@ public class AppConfig  {
     // 1. Định nghĩa logic lấy User từ DB
     @Bean
     public UserDetailsService userDetailsService() {
-        return username ->   userReponsitory
+        return username -> userReponsitory
                 .findByEmail(username)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST));
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
     }
     @Bean
     public PasswordEncoder passwordEncoder() {

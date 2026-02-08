@@ -5,6 +5,7 @@ import lombok.*;
 import org.example.inventory.enums.TransactionStatus;
 import org.example.inventory.enums.TransactionType;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @NoArgsConstructor
+@EntityListeners(TransactionalEventListener.class)
 public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,16 +43,16 @@ public class Transaction {
     @CreationTimestamp
     private  LocalDateTime createdAt;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false) // 1. Trỏ vào cột user_id
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "supplier_id", nullable = false) // Đổi user_id -> supplier_id
     private Supplier supplier;
 
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false) // Đổi user_id -> product_id
     private Product product;
 }

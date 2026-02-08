@@ -8,18 +8,10 @@ import org.mapstruct.*;
 @Mapper(componentModel = "spring")
 public interface TransactionMapper {
     // 1. Chỉ map các field cơ bản (tên, giá...), bỏ qua ID để map sau
-    @Mapping(target = "userId", ignore = true)
-    @Mapping(target = "supplierId", ignore = true)
-    @Mapping(target = "productId", ignore = true)
+    @Mapping(source = "user.id", target = "userId")
+    @Mapping(source = "supplier.id", target = "supplierId")
+    @Mapping(source = "product.id", target = "productId")
     TransactionResponse toResponse(Transaction transaction);
-
-    // 2. Logic map ID nằm gọn ở đây
-    @AfterMapping
-    default void mapIds(Transaction source, @MappingTarget TransactionResponse target) {
-        if (source.getUser() != null) target.setUserId(source.getUser().getId());
-        if (source.getSupplier() != null) target.setSupplierId(source.getSupplier().getId());
-        if (source.getProduct() != null) target.setProductId(source.getProduct().getId());
-    }
 
 
 }

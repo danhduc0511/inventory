@@ -27,6 +27,7 @@ public class ProductController {
                 .build();
     }
     //api get all product
+    
     @GetMapping("/all")
     public DataResponse<List<ProductResponse>> getAllProducts() {
         List<ProductResponse> products = productService.getProductsAll();
