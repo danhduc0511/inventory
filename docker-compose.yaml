@@ -1,0 +1,9 @@
+services:
+  #setting up a Redis container
+  redis:
+    image: redis:8
+    container_name: redis
+    ports:
+      - "6379:6379"
+  #setting up a MySQL container
+

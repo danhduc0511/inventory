@@ -7,6 +7,7 @@ import org.example.inventory.dtos.respon.DataResponse;
 import org.example.inventory.dtos.respon.ProductResponse;
 import org.example.inventory.service.ProductService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,6 +19,7 @@ public class ProductController {
     private final ProductService productService;
     //api  tao product
     @PostMapping("/create")
+    @PreAuthorize("hasRole('ADMIN')")
     public DataResponse<ProductResponse> createProduct(@Valid @RequestBody ProductDTO productDTO) {
         ProductResponse productResponse = productService.createProduct(productDTO);
         return DataResponse.<ProductResponse>builder()
@@ -27,8 +29,9 @@ public class ProductController {
                 .build();
     }
     //api get all product
-    
+
     @GetMapping("/all")
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     public DataResponse<List<ProductResponse>> getAllProducts() {
         List<ProductResponse> products = productService.getProductsAll();
         return DataResponse.<List<ProductResponse>>builder()
@@ -39,6 +42,7 @@ public class ProductController {
     }
     //api tim kiem product theo id
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     public DataResponse<ProductResponse> getProductById(@PathVariable Long id) {
         ProductResponse productResponse = productService.getProductById(id);
         return DataResponse.<ProductResponse>builder()
@@ -49,6 +53,7 @@ public class ProductController {
     }
     //api cap nhat product
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public DataResponse<ProductResponse> updateProduct(@PathVariable Long id, @Valid @RequestBody ProductDTO productDTO) {
         ProductResponse productResponse = productService.updateProduct(id, productDTO);
         return DataResponse.<ProductResponse>builder()
@@ -59,6 +64,7 @@ public class ProductController {
     }
     //api xoa product
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public DataResponse<Void> deleteProduct(@PathVariable Long id) {
         productService.deleteProductById(id);
         return DataResponse.<Void>builder()

@@ -14,4 +14,6 @@ public interface TransactionReponsitory  extends JpaRepository<Transaction,Long>
 
     List<Transaction> findAllByProduct_Id(Long productId);
 
+
+
 }

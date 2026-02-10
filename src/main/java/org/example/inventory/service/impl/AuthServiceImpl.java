@@ -6,6 +6,7 @@ import org.example.inventory.dtos.request.SignIn;
 import org.example.inventory.exception.AppException;
 import org.example.inventory.exception.ErrorCode;
 import org.example.inventory.models.User;
+import org.example.inventory.repository.RedisTokenRepository;
 import org.example.inventory.service.AuthService;
 import org.example.inventory.utils.JwtUtil;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
+    private final RedisTokenRepository redisTokenRepository;
 
     @Override
     public String signIn(SignIn signIn) {
@@ -35,5 +37,10 @@ public class AuthServiceImpl implements AuthService {
             log.warn("Authentication failed for user: {} - Error: {}", signIn.getUsername(), e.getMessage());
             throw new AppException(ErrorCode.INVALID_CREDENTIALS);
         }
+    }
+
+    @Override
+    public void logout(String token) {
+
     }
 }

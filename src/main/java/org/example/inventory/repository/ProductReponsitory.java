@@ -6,8 +6,17 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface ProductReponsitory  extends JpaRepository<Product,Long> {
+public interface ProductReponsitory extends JpaRepository<Product, Long> {
     @Modifying
-    @Query("UPDATE Product p SET p.quantityInStock = p.quantityInStock - :soldQuantity WHERE p.id = :id AND p.quantityInStock >= :soldQuantity")
-    int decreaseStock(@Param("id") Long id,@Param("soldQuantity") int soldQuantity);
+    @Query(value = """
+                UPDATE Product p
+                SET p.quantityInStock = p.quantityInStock - :soldQuantity
+                WHERE p.id = :id
+                  AND p.quantityInStock >= :soldQuantity
+            """)
+    int decreaseStock(
+            @Param("id") Long id,
+            @Param("soldQuantity") int soldQuantity
+    );
+
 }

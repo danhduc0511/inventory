@@ -5,7 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import org.example.inventory.dtos.request.SignIn;
+import org.example.inventory.dtos.respon.JwtInfo;
 import org.example.inventory.models.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,6 +15,7 @@ import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 
 @Component
@@ -42,22 +43,26 @@ public class JwtUtil {
                 .setSubject(user.getEmail())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration*1000))
+                .setId(UUID.randomUUID().toString())
                 .signWith(getJwtKey(),SignatureAlgorithm.HS256)
                 .compact();
     }
-    //get All claim from token
-    public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = Jwts.parserBuilder()
+    public Claims getAllClaimsFromToken(String token) {
+        return Jwts.parserBuilder()
                 .setSigningKey(getJwtKey())
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
-        return claimsResolver.apply(claims);
+    }
+    public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
+        //áp dụng hàm để lấy claim cụ thể
+        return claimsResolver.apply(getAllClaimsFromToken(token));
     }
     //lay email tu token
     public String getEmailFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
     }
+
     //kiem tra token con hieu luc khong
     public Boolean isTokenExpired(String token) {
         return getClaimFromToken(token, Claims::getExpiration)
@@ -67,4 +72,19 @@ public class JwtUtil {
         return !isTokenExpired(token)||getEmailFromToken(token).equals(userDetails.getUsername());
     }
 
+    public JwtInfo parseToken(String token) {
+        String tokenId = getClaimFromToken(token, Claims::getId);
+        Date issueTime = getClaimFromToken(token, Claims::getIssuedAt);
+        Date expirationTime = getClaimFromToken(token, Claims::getExpiration);
+        return JwtInfo.builder()
+                .tokenId(tokenId)
+                .issueTime(issueTime)
+                .expirationTime(expirationTime)
+                .build();
+    }
 }
+
+//ID cho token = jti
+//Sinh bằng UUID
+//Dùng cho logout / revoke / blacklist
+//Lưu Redis với TTL theo exp

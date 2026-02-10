@@ -7,6 +7,7 @@ import org.example.inventory.dtos.respon.CategoryResponse;
 import org.example.inventory.dtos.respon.DataResponse;
 import org.example.inventory.service.CategoryService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,6 +19,7 @@ public class CategoryController {
     private final CategoryService categoryService;
     // Create a new category
     @PostMapping("/create")
+    @PreAuthorize("hasRole('ADMIN')")
     public DataResponse<CategoryResponse> createCategory(@RequestBody @Valid CategoryDTO categoryDTO) {
         CategoryResponse categoryResponse = categoryService.createCategory(categoryDTO);
         return DataResponse.<CategoryResponse>builder()
@@ -29,7 +31,8 @@ public class CategoryController {
 
     //get all categories
     @GetMapping("/all")
-    public DataResponse<List<CategoryResponse>> allCategories() {
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    public DataResponse<List<CategoryResponse>> getAllCategories() {
         List<CategoryResponse> categories = categoryService.getAllCategories();
         return DataResponse.<List<CategoryResponse>>builder()
                 .code(HttpStatus.OK.value())
@@ -39,6 +42,7 @@ public class CategoryController {
     }
     //get category by id
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public DataResponse<CategoryResponse> getCategoryById(@PathVariable Long id) {
         CategoryResponse categoryResponse = categoryService.getCategoryById(id);
         return DataResponse.<CategoryResponse>builder()
@@ -49,6 +53,7 @@ public class CategoryController {
     }
     //update category
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public DataResponse<CategoryResponse> updateCategory(@PathVariable Long id, @RequestBody @Valid CategoryDTO categoryDTO) {
         CategoryResponse categoryResponse = categoryService.updateCategory(id, categoryDTO);
         return DataResponse.<CategoryResponse>builder()

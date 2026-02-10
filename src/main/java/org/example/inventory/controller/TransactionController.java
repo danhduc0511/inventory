@@ -8,6 +8,7 @@ import org.example.inventory.dtos.respon.DataResponse;
 import org.example.inventory.dtos.respon.TransactionResponse;
 import org.example.inventory.service.TransactionService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.List;
 public class TransactionController {
     private final TransactionService transactionService;
     @PostMapping("/create")
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     public DataResponse<TransactionResponse> createTransaction(@RequestBody @Valid TransactionCreateRequest transactionCreateRequest) {
         TransactionResponse transactionResponse = transactionService.createTransaction(transactionCreateRequest);
         return DataResponse.<TransactionResponse>builder()
@@ -27,6 +29,7 @@ public class TransactionController {
                 .build();
     }
     @GetMapping("/by-user")
+    @PreAuthorize("hasAnyRole('ADMIN') or(hasRole('USER') and #userId == authentication.principal.id)")
     public DataResponse<List<TransactionResponse>> getAllTransactionsByUserId(@RequestParam Long userId) {
             List<TransactionResponse> transactions  = transactionService.getTransactionsByUserId(userId);
             return DataResponse.<List<TransactionResponse>>builder()
@@ -35,7 +38,9 @@ public class TransactionController {
                     .data(transactions)
                     .build();
     }
+
     @PutMapping("/update/{id}")
+   // @PreAuthorize("hasRole('USER') and ")
     public DataResponse<TransactionResponse> updateTransaction(@PathVariable Long id, @RequestBody @Valid TransactionUpdateDTO upd) {
         TransactionResponse transactionResponse = transactionService.updateTransaction(id, upd);
         return DataResponse.<TransactionResponse>builder()
